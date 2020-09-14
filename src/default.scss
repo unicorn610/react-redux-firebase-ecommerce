@@ -7,7 +7,9 @@ html, body {
     padding: 0;
 }
 
-html, body, #root, .App {
+html, body, #root, 
+.App,
+.full-height {
     height: 100%;
 }
 
@@ -39,6 +41,6 @@ a, a:hover {
     width: 100%;
     height: calc(100% - 6.5rem);
     max-width: 1450px;
-    padding: 0 10px;
     margin: 0 auto;
+    padding: 0 10px;
 }
