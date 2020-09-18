@@ -1,4 +1,4 @@
-.signin {
+.signup {
     display: block;
     width: 100%;
     max-width: 40.0rem;
@@ -17,10 +17,11 @@
             line-height: 1;
             text-transform: uppercase;
             text-align: center;
+
         }
 
-        .socialSignin {
-            margin: .5rem auto 0;
+        .formWrap {
+            margin: 3rem auto 0;
         }
     }
 }
