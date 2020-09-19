@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import './styles.scss'
 
 import { auth, signInWithGoogle } from './../../firebase/utils'
 
+import AuthWrapper from './../AuthWrapper'
 import FormInput from './../forms/FormInput'
 import Button from './../forms/Button'
 
@@ -30,7 +32,7 @@ class SignIn extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
-        const { email, password, errors } = this.state
+        const { email, password } = this.state
 
         try {
             
@@ -50,57 +52,66 @@ class SignIn extends Component {
     render() {
         const { email, password, errors } = this.state
 
+        const configAuthWrapper = {
+            headline: 'LogIn'
+        }
+
         return (
-            <div className="signin">
-                <div className="wrap">
-                    <h2>Login</h2>
+            <AuthWrapper {...configAuthWrapper}>
                     
+                <div className="formWrap">
+                
                     {errors.length > 0 && (
                         <ul>
-                            {errors.map((err, index) => {
+                            {errors.map((e, i) => {
                                 return (
-                                    <li key={index}>
-                                        {err}
+                                    <li key={i}>
+                                        {e}
                                     </li>
                                 )
                             })}
                         </ul>
                     )}
 
-                    <div className="fromWrap">
-                        <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.handleSubmit}>
 
-                            <FormInput 
-                                type="email"
-                                name="email"
-                                value={email}
-                                placeholder="Email"
-                                handleChange={this.handleChange}
-                            />
+                        <FormInput 
+                            type="email"
+                            name="email"
+                            value={email}
+                            placeholder="Email"
+                            handleChange={this.handleChange}
+                        />
 
-                            <FormInput 
-                                type="password"
-                                name="password"
-                                value={password}
-                                placeholder="Password"
-                                handleChange={this.handleChange}
-                            />
+                        <FormInput 
+                            type="password"
+                            name="password"
+                            value={password}
+                            placeholder="Password"
+                            handleChange={this.handleChange}
+                        />
 
-                            <Button type="submit">
-                                Login
-                            </Button>
+                        <Button type="submit">
+                            Login
+                        </Button>
 
-                            <div className="socialSignin">
-                                <div className="row">
-                                    <Button type="button" onClick={signInWithGoogle}>
-                                        Sign in with Google
-                                    </Button>
-                                </div>
+                        <div className="socialSignin">
+                            <div className="row">
+                                <Button type="button" onClick={signInWithGoogle}>
+                                    Sign in with Google
+                                </Button>
                             </div>
-                        </form>
-                    </div> 
-                </div>
-            </div>
+                        </div>
+
+                        <div className="links">
+                            <Link to="/recovery">
+                                Reset Password
+                            </Link>
+                        </div>
+
+                    </form>
+                </div> 
+            </AuthWrapper>
         )
     }
 }
