@@ -1,36 +1,54 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, withRouter } from 'react-router-dom'
-import './styles.scss'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInUser, signInWithGoogle, resetAllAuthForms } from './../../redux/User/user.actions'
 
-import { auth, signInWithGoogle } from './../../firebase/utils'
+import './styles.scss'
 
 import AuthWrapper from './../AuthWrapper'
 import FormInput from './../forms/FormInput'
 import Button from './../forms/Button'
 
+const mapState = ({ user }) => ({
+    signInSuccess: user.signInSuccess,
+    signInError: user.signInError
+})
+
 const SignIn = props => {
+    const { signInSuccess, signInError } = useSelector(mapState)
+    const dispatch = useDispatch()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [errors, setErrors] = useState([])
+
+    useEffect(() => {
+        if (signInSuccess) {
+            resetForm()
+            dispatch(resetAllAuthForms())
+            props.history.push('/')
+        }
+
+    }, [signInSuccess])
+
+    useEffect(() => {
+        if (Array.isArray(signInError) && signInError.length > 0) {
+            setErrors(signInError)
+        }
+
+    }, [signInError])
 
     const resetForm = () => {
         setEmail('')
         setPassword('')
     }
 
-    const handleSubmit = async e => {
+    const handleSubmit = e => {
         e.preventDefault();
+        dispatch(signInUser({ email, password }))
+    }
 
-        try {
-            
-            await auth.signInWithEmailAndPassword(email, password);
-            resetForm()
-            props.history.push('/')
-
-        } catch (err) {
-            setErrors([err.message])
-            // console.log(err)
-        }
+    const handleGoogleSignIn = () => {
+        dispatch(signInWithGoogle())
     }
 
     const configAuthWrapper = {
@@ -78,7 +96,7 @@ const SignIn = props => {
 
                     <div className="socialSignin">
                         <div className="row">
-                            <Button type="button" onClick={signInWithGoogle}>
+                            <Button type="button" onClick={handleGoogleSignIn}>
                                 Sign in with Google
                             </Button>
                         </div>
