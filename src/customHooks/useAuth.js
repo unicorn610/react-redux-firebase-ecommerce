@@ -1,21 +1,22 @@
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const mapState = ({ user }) => ({
-    currentUser: user.currentUser
-})
+  currentUser: user.currentUser,
+});
 
-const useAuth = props => {
-    const { currentUser } = useSelector(mapState)
+const useAuth = (props) => {
+  const history = useHistory();
+  const { currentUser } = useSelector(mapState);
 
-    useEffect(() => {
-        if (!currentUser) {
-            props.history.push('/login')
-        }
-        
-    }, [currentUser])
+  useEffect(() => {
+    if (!currentUser) {
+      history.push('/login');
+    }
+  }, [currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    return currentUser
-}
+  return currentUser;
+};
 
-export default useAuth
+export default useAuth;

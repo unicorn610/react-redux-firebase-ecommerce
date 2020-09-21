@@ -20,19 +20,28 @@ export const handleUserProfile = async (userAuth, additionalData) => {
     const snapshot = await userRef.get();
 
     if (!snapshot.exists) {
-        const { displayName, email } = userAuth;
-        const timestamp = new Date();
+      const { displayName, email } = userAuth;
+      const timestamp = new Date();
 
-        try {
-            await userRef.set({
-                displayName,
-                email,
-                createDate: timestamp,
-                ...additionalData
-            })
-        } catch(err) {
-            console.log(err)
-        }
+      try {
+          await userRef.set({
+              displayName,
+              email,
+              createDate: timestamp,
+              ...additionalData
+          })
+      } catch(err) {
+          console.log(err)
+      }
     }
     return userRef;
 };
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged(userAuth => {
+      unsubscribe();
+      resolve(userAuth)
+    }, reject)
+  })
+}

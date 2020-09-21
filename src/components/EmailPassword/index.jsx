@@ -1,84 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { resetPassword, resetAllAuthForms } from './../../redux/User/user.actions'
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPwdStart, resetUserState } from './../../redux/User/user.actions';
 
-import './styles.scss'
+import './styles.scss';
 
-import AuthWrapper from './../AuthWrapper'
-import FormInput from './../forms/FormInput'
-import Button from './../forms/Button'
+import AuthWrapper from './../AuthWrapper';
+import FormInput from './../forms/FormInput';
+import Button from './../forms/Button';
 
 const mapState = ({ user }) => ({
-    resetPwdSuccess: user.resetPwdSuccess,
-    resetPwdError: user.resetPwdError
-})
+  resetPwdSuccess: user.resetPwdSuccess,
+  userErr: user.userErr
+});
 
-const EmailPassword = props => {
-    const { resetPwdSuccess, resetPwdError } = useSelector(mapState)
-    const dispatch = useDispatch()
-    const [email, setEmail] = useState('')
-    const [errors, setErrors] = useState([])
+const EmailPassword = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { resetPwdSuccess, userErr } = useSelector(mapState);
+  const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState([]);
 
-    useEffect(() => {
-        if (resetPwdSuccess) {
-            dispatch(resetAllAuthForms())
-            props.history.push('/login')
-        }
-
-    }, [resetPwdSuccess])
-
-    useEffect(() => {
-        if (Array.isArray(resetPwdError) && resetPwdError.length > 0) {
-            setErrors(resetPwdError)
-        }
-
-    }, [resetPwdError])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        dispatch(resetPassword({ email }))
+  useEffect(() => {
+    if (resetPwdSuccess) {
+      dispatch(resetUserState());
+      history.push('/login');
     }
+  }, [resetPwdSuccess]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const configAuthWrapper = {
-        headline: 'Email Password'
+  useEffect(() => {
+    if (Array.isArray(userErr) && userErr.length > 0) {
+      setErrors(userErr);
     }
+  }, [userErr]);
 
-    return (
-        <AuthWrapper {...configAuthWrapper}>
-        
-            <div className="formWrap">
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(resetPwdStart({ email }));
+  };
 
-                {errors.length > 0 && (
-                    <ul>
-                        {errors.map((e, i) => {
-                            return (
-                                <li key={i}>
-                                    {e}
-                                </li>
-                            )
-                        })}
-                    </ul>
-                )}
+  const configAuthWrapper = {
+    headline: 'Email Password',
+  };
 
-                <form onSubmit={handleSubmit}>
+  return (
+    <AuthWrapper {...configAuthWrapper}>
+      <div className="formWrap">
+        {errors.length > 0 && (
+          <ul>
+            {errors.map((e, i) => {
+              return <li key={i}>{e}</li>;
+            })}
+          </ul>
+        )}
 
-                    <FormInput 
-                        type="email"
-                        name="email"
-                        value={email}
-                        placeholder="Email"
-                        handleChange={e => setEmail(e.target.value)}
-                    />
+        <form onSubmit={handleSubmit}>
+          <FormInput
+            type="email"
+            name="email"
+            value={email}
+            placeholder="Email"
+            handleChange={(e) => setEmail(e.target.value)}
+          />
 
-                    <Button type="submit">
-                        Email Password
-                    </Button>
+          <Button type="submit">Email Password</Button>
+        </form>
+      </div>
+    </AuthWrapper>
+  );
+};
 
-                </form>
-            </div>
-        </AuthWrapper>
-    );
-}
-
-export default withRouter(EmailPassword);
+export default EmailPassword;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { signInUser, signInWithGoogle, resetAllAuthForms } from './../../redux/User/user.actions'
+import { emailSignInStart, googleSignInStart } from './../../redux/User/user.actions'
 
 import './styles.scss'
 
@@ -10,108 +10,94 @@ import FormInput from './../forms/FormInput'
 import Button from './../forms/Button'
 
 const mapState = ({ user }) => ({
-    signInSuccess: user.signInSuccess,
-    signInError: user.signInError
-})
+  currentUser: user.currentUser,
+  userErr: user.userErr
+});
 
-const SignIn = props => {
-    const { signInSuccess, signInError } = useSelector(mapState)
-    const dispatch = useDispatch()
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([])
+const SignIn = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { currentUser, userErr } = useSelector(mapState);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState([]);
 
-    useEffect(() => {
-        if (signInSuccess) {
-            resetForm()
-            dispatch(resetAllAuthForms())
-            props.history.push('/')
-        }
-
-    }, [signInSuccess])
-
-    useEffect(() => {
-        if (Array.isArray(signInError) && signInError.length > 0) {
-            setErrors(signInError)
-        }
-
-    }, [signInError])
-
-    const resetForm = () => {
-        setEmail('')
-        setPassword('')
+  useEffect(() => {
+    if (currentUser) {
+      resetForm();
+      history.push('/');
     }
+  }, [currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleSubmit = e => {
-        e.preventDefault();
-        dispatch(signInUser({ email, password }))
+  useEffect(() => {
+    if (Array.isArray(userErr) && userErr.length > 0) {
+      setErrors(userErr);
     }
+  }, [userErr]);
 
-    const handleGoogleSignIn = () => {
-        dispatch(signInWithGoogle())
-    }
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+  };
 
-    const configAuthWrapper = {
-        headline: 'LogIn'
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(emailSignInStart({ email, password }));
+  };
 
-    return (
-        <AuthWrapper {...configAuthWrapper}>
-                
-            <div className="formWrap">
-            
-                {errors.length > 0 && (
-                    <ul>
-                        {errors.map((e, i) => {
-                            return (
-                                <li key={i}>
-                                    {e}
-                                </li>
-                            )
-                        })}
-                    </ul>
-                )}
+  const handleGoogleSignIn = () => {
+    dispatch(googleSignInStart());
+  };
 
-                <form onSubmit={handleSubmit}>
+  const configAuthWrapper = {
+    headline: 'LogIn',
+  };
 
-                    <FormInput 
-                        type="email"
-                        name="email"
-                        value={email}
-                        placeholder="Email"
-                        handleChange={e => setEmail(e.target.value)}
-                    />
+  return (
+    <AuthWrapper {...configAuthWrapper}>
+      <div className="formWrap">
+        {errors.length > 0 && (
+          <ul>
+            {errors.map((e, i) => {
+              return <li key={i}>{e}</li>;
+            })}
+          </ul>
+        )}
 
-                    <FormInput 
-                        type="password"
-                        name="password"
-                        value={password}
-                        placeholder="Password"
-                        handleChange={e => setPassword(e.target.value)}
-                    />
+        <form onSubmit={handleSubmit}>
+          <FormInput
+            type="email"
+            name="email"
+            value={email}
+            placeholder="Email"
+            handleChange={(e) => setEmail(e.target.value)}
+          />
 
-                    <Button type="submit">
-                        Login
-                    </Button>
+          <FormInput
+            type="password"
+            name="password"
+            value={password}
+            placeholder="Password"
+            handleChange={(e) => setPassword(e.target.value)}
+          />
 
-                    <div className="socialSignin">
-                        <div className="row">
-                            <Button type="button" onClick={handleGoogleSignIn}>
-                                Sign in with Google
-                            </Button>
-                        </div>
-                    </div>
+          <Button type="submit">Login</Button>
 
-                    <div className="links">
-                        <Link to="/recovery">
-                            Reset Password
-                        </Link>
-                    </div>
+          <div className="socialSignin">
+            <div className="row">
+              <Button type="button" onClick={handleGoogleSignIn}>
+                Sign in with Google
+              </Button>
+            </div>
+          </div>
 
-                </form>
-            </div> 
-        </AuthWrapper>
-    )
-}
+          <div className="links">
+            <Link to="/recovery">Reset Password</Link>
+          </div>
+        </form>
+      </div>
+    </AuthWrapper>
+  );
+};
 
-export default withRouter(SignIn)
+export default SignIn;
