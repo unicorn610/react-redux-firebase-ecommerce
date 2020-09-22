@@ -14,7 +14,7 @@ const mapState = ({ user }) => ({
   userErr: user.userErr,
 });
 
-const SignUp = (props) => {
+const SignUp = props => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { currentUser, userErr } = useSelector(mapState);
@@ -77,7 +77,7 @@ const SignUp = (props) => {
             name="displayName"
             value={displayName}
             placeholder="Full name"
-            handleChange={(e) => setDisplayName(e.target.value)}
+            handleChange={e => setDisplayName(e.target.value)}
           />
 
           <FormInput
@@ -85,7 +85,7 @@ const SignUp = (props) => {
             name="email"
             value={email}
             placeholder="Email"
-            handleChange={(e) => setEmail(e.target.value)}
+            handleChange={e => setEmail(e.target.value)}
           />
 
           <FormInput
@@ -93,7 +93,7 @@ const SignUp = (props) => {
             name="password"
             value={password}
             placeholder="Password"
-            handleChange={(e) => setPassword(e.target.value)}
+            handleChange={e => setPassword(e.target.value)}
           />
 
           <FormInput
@@ -101,7 +101,7 @@ const SignUp = (props) => {
             name="confirmPassword"
             value={confirmPassword}
             placeholder="Confirm Password"
-            handleChange={(e) => setConfirmPassword(e.target.value)}
+            handleChange={e => setConfirmPassword(e.target.value)}
           />
 
           <Button type="submit">Register</Button>
