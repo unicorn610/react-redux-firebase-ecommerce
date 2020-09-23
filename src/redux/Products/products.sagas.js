@@ -30,18 +30,16 @@ export function* onAddProductStart() {
   yield takeLatest(productsTypes.ADD_NEW_PRODUCT_START, addProduct);
 }
 
-export function* fetchProducts() {
+export function* fetchProducts({ payload: { filterType } }) {
   try {
-    const products = yield handleFetchProducts();
+    const products = yield handleFetchProducts({ filterType });
     yield put(setProducts(products));
-
-    yield put(fetchProductsStart());
   } catch (err) {
     // console.log(err)
   }
 }
 
-export function* onFetchProductStart() {
+export function* onFetchProductsStart() {
   yield takeLatest(productsTypes.FETCH_PRODUCTS_START, fetchProducts);
 }
 
@@ -61,7 +59,7 @@ export function* onDeleteProductStart() {
 export default function* productSagas() {
   yield all([
     call(onAddProductStart),
-    call(onFetchProductStart),
+    call(onFetchProductsStart),
     call(onDeleteProductStart),
   ]);
 }
