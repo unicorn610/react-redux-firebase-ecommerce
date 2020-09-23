@@ -23,6 +23,8 @@ const Admin = (props) => {
   const [productThumbnail, setProductThumbnail] = useState('');
   const [productPrice, setProductPrice] = useState(0);
 
+  const { data, queryDoc, isLastPage } = products;
+
   useEffect(() => {
     dispatch(
       fetchProductsStart()
@@ -59,6 +61,19 @@ const Admin = (props) => {
     resetForm();
 
   };
+
+  const handleLoadMore =() => {
+    dispatch(
+      fetchProductsStart({
+        startAfterDoc: queryDoc,
+        persistProducts: data
+      })
+    )
+  }
+
+  const configLoadMore = {
+    onLoadMoreEvt: handleLoadMore
+  }
 
   return (
     <div className="admin">
@@ -136,7 +151,7 @@ const Admin = (props) => {
                   cellSpacing="0"
                 >
                   <tbody>
-                    {products.map((product, index) => {
+                    {(Array.isArray(data) && data.length > 0) && data.map((product, index) => {
                         const {
                           productName,
                           productThumbnail,
@@ -175,7 +190,7 @@ const Admin = (props) => {
                 <table border="0" cellPadding="10" cellSpacing="0">
                   <tbody>
                     <tr>
-                      {/* <td>{!isLastPage && <LoadMore {...configLoadMore} />}</td> */}
+                      <td>{!isLastPage && <LoadMore {...configLoadMore} />}</td>
                     </tr>
                   </tbody>
                 </table>
